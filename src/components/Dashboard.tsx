@@ -139,26 +139,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ onProjectSelect }) => {
     if (!inviteUserId.trim()) return;
 
     try {
-      const { error } = await supabase
-        .from('invitations')
-        .insert([
-          {
-            project_id: selectedProjectId,
-            invited_user_id: inviteUserId,
-          },
-        ]);
+      const { data, error } = await supabase.rpc('invite_user_to_project', {
+        project_id_param: selectedProjectId,
+        invited_user_id_param: inviteUserId,
+      });
 
       if (error) throw error;
 
+      if (!data.success) {
+        toast.error(data.error);
+        return;
+      }
+
       setInviteUserId('');
       setShowInviteModal(false);
-      toast.success('Invitation sent successfully!');
+      toast.success(data.message);
     } catch (error: any) {
-      if (error.code === '23505') {
-        toast.error('User has already been invited to this project');
-      } else {
-        toast.error('Error sending invitation');
-      }
+      toast.error('Error sending invitation');
     }
   };
 
