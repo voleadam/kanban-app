@@ -16,14 +16,18 @@ interface Invitation {
 }
 
 export const Profile: React.FC = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [invitations, setInvitations] = useState<Invitation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingInvitations, setLoadingInvitations] = useState(true);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    loadInvitations();
-  }, []);
+    if (!authLoading && user) {
+      loadInvitations();
+    } else if (!authLoading && !user) {
+      setLoadingInvitations(false);
+    }
+  }, [user, authLoading]);
 
   const loadInvitations = async () => {
     try {
@@ -42,7 +46,7 @@ export const Profile: React.FC = () => {
     } catch (error: any) {
       toast.error('Error loading invitations');
     } finally {
-      setLoading(false);
+      setLoadingInvitations(false);
     }
   };
 
@@ -154,7 +158,7 @@ export const Profile: React.FC = () => {
             Pending Invitations ({invitations.length})
           </h2>
           
-          {loading ? (
+          {loadingInvitations ? (
             <div className="flex items-center justify-center py-8">
               <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
             </div>
