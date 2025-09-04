@@ -140,20 +140,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ onProjectSelect }) => {
 
     try {
       const { data, error } = await supabase.rpc('invite_user_to_project', {
-        project_id_param: selectedProjectId,
-        invited_user_id_param: inviteUserId,
+        p_project_id: selectedProjectId,
+        p_invited_user_id: inviteUserId,
       });
 
       if (error) throw error;
 
-      if (!data.success) {
-        toast.error(data.error);
-        return;
-      }
-
       setInviteUserId('');
       setShowInviteModal(false);
-      toast.success(data.message);
+      toast.success('Invitation sent successfully!');
     } catch (error: any) {
       toast.error('Error sending invitation');
     }
