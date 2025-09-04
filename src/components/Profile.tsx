@@ -61,26 +61,16 @@ export const Profile: React.FC = () => {
 
   const handleInvitation = async (invitationId: string, status: 'accepted' | 'declined') => {
     try {
-      // Update invitation status
-      const { data: invitation, error: updateError } = await supabase
-        .from('invitations')
-        .update({ status })
-        .eq('id', invitationId)
-        .select('project_id')
-        .single();
-
-      if (updateError) throw updateError;
-
-      // If invitation was accepted, add user to project_members
-      if (status === 'accepted' && invitation && user?.id) {
-        const { error: memberError } = await supabase
-          .from('project_members')
-          .insert({
-            project_id: invitation.project_id,
-            user_id: user.id
-          });
-
-        if (memberError) throw memberError;
+      if (status === 'accepted') {
+        const { error } = await supabase.rpc('accept_invitation', {
+          p_invitation_id: invitationId
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.rpc('cancel_invitation', {
+          p_invitation_id: invitationId
+        });
+        if (error) throw error;
       }
 
       setInvitations(invitations.filter(inv => inv.id !== invitationId));
