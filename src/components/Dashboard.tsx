@@ -126,7 +126,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ onProjectSelect }) => {
 
       if (error) throw error;
 
-      setProjects([...projects, { ...data, is_owner: true }]);
       setNewProjectName('');
       setShowNewProjectModal(false);
       toast.success('Project created successfully!');
