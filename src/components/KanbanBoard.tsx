@@ -163,8 +163,20 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId }) => {
     const sourceColumn = source.droppableId as 'todo' | 'inprogress' | 'done';
     const destColumn = destination.droppableId as 'todo' | 'inprogress' | 'done';
 
+    // Optimistic update: Update local state immediately
+    const updatedCards = cards.map(card => {
+      if (card.id === draggableId) {
+        return {
+          ...card,
+          column_type: destColumn,
+        };
+      }
+      return card;
+    });
+    setCards(updatedCards);
+
     // Get all cards in the destination column
-    const destCards = cards
+    const destCards = updatedCards
       .filter(card => card.column_type === destColumn)
       .sort((a, b) => a.order_index - b.order_index);
 
@@ -180,6 +192,18 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId }) => {
       newOrderIndex = (prevCard.order_index + nextCard.order_index) / 2;
     }
 
+    // Update the optimistic state with the correct order_index
+    const finalUpdatedCards = updatedCards.map(card => {
+      if (card.id === draggableId) {
+        return {
+          ...card,
+          order_index: newOrderIndex,
+        };
+      }
+      return card;
+    });
+    setCards(finalUpdatedCards);
+
     try {
       const { error } = await supabase
         .from('cards')
@@ -191,6 +215,8 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId }) => {
 
       if (error) throw error;
     } catch (error: any) {
+      // Revert optimistic update on error
+      setCards(cards);
       toast.error('Error moving card');
     }
   };
