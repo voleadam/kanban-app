@@ -1,0 +1,16 @@
+# .bolt/ignore  (inside the .bolt folder)
+node_modules/**
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+dist/**
+build/**
+.next/**
+coverage/**
+supabase/.temp/**
+supabase/seed/**
+supabase/migrations/**   # keep 1–2 current files visible if you're actively editing them
+public/assets/**         # ignore large images/videos; keep only what the UI needs today
+**/*.map
+**/*.log
+**/*.md                  # docs & long READMEs add a lot of tokens
