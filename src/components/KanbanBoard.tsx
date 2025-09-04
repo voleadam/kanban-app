@@ -189,7 +189,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId }) => {
     } else {
       const prevCard = destCards[destination.index - 1];
       const nextCard = destCards[destination.index];
-      newOrderIndex = (prevCard.order_index + nextCard.order_index) / 2;
+      newOrderIndex = Math.round((prevCard.order_index + nextCard.order_index) / 2);
     }
 
     // Update the optimistic state with the correct order_index
