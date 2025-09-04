@@ -142,6 +142,10 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ projectId }) => {
         .eq('id', cardId);
 
       if (error) throw error;
+     
+     // Optimistic update: immediately remove card from local state
+     setCards(current => current.filter(card => card.id !== cardId));
+     
       toast.success('Card deleted successfully!');
     } catch (error: any) {
       toast.error('Error deleting card');
